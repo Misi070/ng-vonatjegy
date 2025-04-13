@@ -1,0 +1,38 @@
+.slideshow-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: 25vh; /* Alapértelmezett magasság mobilon */
+  margin: auto;
+  overflow: hidden;
+}
+
+.slideshow-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  display: block;
+}
+
+.slideshow-container img.fade {
+  animation: fadeEffect 10s infinite;
+}
+
+@keyframes fadeEffect {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (min-width: 768px) {
+  .slideshow-container {
+    height: 75vh; 
+  }
+}
+
+h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-top: 20px;
+}
+

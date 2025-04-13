@@ -1,0 +1,94 @@
+/* Mobile-first layout */
+.account-container {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  background-color: #f0f0f0;
+  min-height: calc(100vh - 64px);
+}
+
+.account-card {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 1rem;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0;
+}
+
+.ticket-section h3 {
+  margin-top: 1.5rem;
+}
+
+.secondary {
+  color: gray;
+  font-size: 0.85rem;
+}
+
+.no-ticket-msg {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+  margin-top: 1rem;
+}
+
+/* Kedvezmény badge */
+.discount-badge {
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: white;
+  margin: 0 4px;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Színkódok kedvezményekhez */
+.discount-full {
+  background-color: #4caf50; /* zöld - 100% */
+}
+
+.discount-high {
+  background-color: #2196f3; /* kék - 70% */
+}
+
+.discount-medium {
+  background-color: #ff9800; /* narancs - 50% */
+}
+
+.discount-none {
+  background-color: #9e9e9e; /* szürke - nincs kedvezmény */
+}
+
+/* Ticket list item styles */
+.ticket-main-line {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.ticket-secondary {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Optional for larger screens */
+@media (min-width: 768px) {
+  .account-card {
+    padding: 1rem 2rem;
+  }
+}

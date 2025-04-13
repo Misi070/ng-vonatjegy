@@ -1,0 +1,48 @@
+<mat-card class="booking-card">
+  <mat-card-title>Vonat keresése</mat-card-title>
+  <mat-card-content>
+    <form (ngSubmit)="searchTrains()" class="booking-form">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Indulási állomás</mat-label>
+        <input matInput [(ngModel)]="departureStation" name="departure">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Érkezési állomás</mat-label>
+        <input matInput [(ngModel)]="arrivalStation" name="arrival">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Kedvezmény</mat-label>
+        <mat-select [(ngModel)]="discountPercentage" name="discount">
+          <mat-option *ngFor="let discount of discountOptions" [value]="discount">{{ discount }}%</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="button-container">
+        <button mat-raised-button color="primary" type="submit">Keresés</button>
+      </div>
+    </form>
+
+    <ng-container *ngIf="searchPerformed">
+      <div *ngIf="filteredTrains.length > 0" class="result-list">
+        <mat-list>
+          <mat-list-item *ngFor="let train of filteredTrains">
+            <div class="train-info">
+              <div mat-line>{{ train.departure }} - {{ train.arrival }}</div>
+              <div mat-line>{{ train.time }}</div>
+              <div class="price">{{ train.price | discount:discountPercentage }} Ft</div>
+            </div>
+            <button mat-stroked-button color="accent" (click)="bookTrain(train)">Foglalás</button>
+          </mat-list-item>
+        </mat-list>
+      </div>
+
+      <mat-card *ngIf="filteredTrains.length === 0">
+        <mat-card-content>
+          <p>Nincs találat a megadott állomásokra.</p>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+  </mat-card-content>
+</mat-card>

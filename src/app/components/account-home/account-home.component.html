@@ -1,0 +1,51 @@
+<mat-toolbar color="primary" class="toolbar">
+  <span>Fiókom</span>
+  <span class="spacer"></span>
+  <button mat-icon-button matTooltip="Kijelentkezés" (click)="logout()">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="account-container">
+  <mat-card class="account-card">
+    <mat-card-header>
+      <mat-card-title>{{ username }}</mat-card-title>
+      <mat-card-subtitle>{{ email }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="actions">
+        <button mat-raised-button color="accent" (click)="goToBooking()">
+          <mat-icon>add_circle</mat-icon>
+          Új foglalás
+        </button>
+      </div>
+
+      <div class="ticket-section">
+        <h3>Jegyeim</h3>
+        <mat-list *ngIf="tickets.length; else noTickets">
+          <mat-list-item *ngFor="let ticket of tickets; let i = index">
+            <mat-icon matListIcon>train</mat-icon>
+            <div matLine class="ticket-main-line">{{ ticket.departure }} → {{ ticket.arrival }}</div>
+            <div matLine class="ticket-secondary">
+              Indulás: {{ ticket.time }} |
+              <span class="discount-badge" [ngClass]="getDiscountClass(ticket.discountApplied || 0)">
+                {{ ticket.discountApplied || 0 }}% kedvezmény
+              </span> |
+              Ár: {{ ticket.price | number: '1.0-0' }} Ft
+            </div>            
+            <button mat-icon-button color="warn" (click)="deleteTicket(i)" matTooltip="Törlés">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-list-item>
+        </mat-list>
+
+        <ng-template #noTickets>
+          <p class="no-ticket-msg">Nincsenek vásárolt jegyek.</p>
+        </ng-template>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

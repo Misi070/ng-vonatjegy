@@ -1,0 +1,25 @@
+<mat-card class="auth-card">
+  <mat-card-title>Bejelentkezés</mat-card-title>
+  <mat-card-content>
+    <form (ngSubmit)="onSubmit()">
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Felhasználónév</mat-label>
+        <input matInput [(ngModel)]="username" name="username" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Jelszó</mat-label>
+        <input matInput type="password" [(ngModel)]="password" name="password" required>
+      </mat-form-field>
+
+      <div class="button-container">
+        <button mat-raised-button color="primary" type="submit">Bejelentkezés</button>
+      </div>
+
+      <div class="link-container">
+        <a mat-button color="accent" routerLink="/account-register">Még nem regisztráltam</a>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

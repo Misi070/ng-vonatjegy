@@ -1,0 +1,46 @@
+/* Alap stílusok, amik minden képernyőmérethez alkalmazkodnak */
+.auth-card {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.link-container {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+/* Mobilra optimalizálás */
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 0.5rem;
+    max-width: 100%;
+  }
+
+  .button-container {
+    justify-content: center;
+  }
+
+  .link-container {
+    text-align: center;
+  }
+}
+
+/* Nagyobb képernyőkhöz (pl. tablet vagy desktop) */
+@media (min-width: 601px) {
+  .auth-card {
+    padding: 2rem;
+    max-width: 450px;
+  }
+}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DiscountPipe } from '../../pipes/discount.pipe';
 
 @Component({
@@ -26,8 +27,7 @@ export class BookingComponent {
   searchPerformed: boolean = false;
 
   discountPercentage: number = 0; // Kezdeti kedvezmény, ha nincs beállítva, akkor nulla
-
-  // Fix kedvezmények
+  //Fix kedvezmények, amiket a felhasználó választhat
   discountOptions: number[] = [0, 50, 70, 100];
 
   trains = [
@@ -39,7 +39,7 @@ export class BookingComponent {
     { departure: 'Debrecen', arrival: 'Budapest', time: '11:00', price: 6000 }
   ];
 
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(private router: Router, private userService: UserService, private snackBar: MatSnackBar) {}
 
   searchTrains() {
     this.filteredTrains = this.trains.filter(train =>
@@ -48,9 +48,11 @@ export class BookingComponent {
     );
     this.searchPerformed = true;
   }
+  bookTrain(train: any) {}
 
-  bookTrain(train: any) {
-    const userData = this.userService.getUserData();
+  /*
+  async bookTrain(train: any) {
+    const userData = this.userService.getCurrentUser();
     if (!userData) {
       alert('Csak bejelentkezett felhasználók foglalhatnak jegyet.');
       this.router.navigate(['/account']);
@@ -67,12 +69,17 @@ export class BookingComponent {
         ...train,
         price: finalPrice,
         discountApplied: this.discountPercentage,
-        bookedAt: new Date()
+        bookedAt: new Date().toISOString()
       };
   
-      this.userService.addTicket(ticket);
-      alert('Foglalás sikeres!\nA jegy lementve!');
+      try {
+        await this.userService.addTicket(ticket);
+        this.snackBar.open('Foglalás sikeres! Jegy elmentve.', 'Bezár', { duration: 3000 });
+      } catch (err) {
+        console.error('Hiba a jegy mentése közben:', err);
+        this.snackBar.open('Hiba történt a foglalás során.', 'Bezár', { duration: 3000 });
+      }
     }
   }
-  
+    */
 }

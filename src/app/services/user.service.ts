@@ -1,56 +1,49 @@
+// user.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { Auth, signInWithEmailAndPassword, signOut, UserCredential, authState, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+import { User } from 'firebase/auth';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private userData: any = null;
-  private users: any[] = [];
+  currentUser$: Observable<User | null>;
 
-  constructor(private http: HttpClient) {}
-
-  // Beállítja az aktuális felhasználót (login/regisztráció után)
-  setUserData(data: any) {
-    this.userData = data;
+  constructor(private auth: Auth, private firestore: Firestore, private router: Router) {
+    this.currentUser$ = authState(this.auth);
   }
 
-  // Visszaadja az aktuális bejelentkezett felhasználót
-  getUserData() {
-    return this.userData;
+  // ✅ Regisztráció: csak Firebase Auth fiók létrehozása
+  async register(email: string, password: string): Promise<UserCredential> {
+    return await createUserWithEmailAndPassword(this.auth, email, password);
   }
 
-  // Betölti a felhasználókat az assets/users.json fájlból (csak egyszer)
-  async getUsers(): Promise<any[]> {
-    if (this.users.length > 0) {
-      return this.users;
-    }
-
-    const response = await lastValueFrom(this.http.get<any[]>('/assets/files/users.json'));
-    this.users = response;
-    return this.users;
+  // ✅ Firestore dokumentum mentése regisztráció után
+  async saveUserDataToFirestore(uid: string, username: string, email: string): Promise<void> {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    const userData = {
+      username: username,
+      email: email,
+      tickets: []  // Kezdetben üres jegylista
+    };
+    await setDoc(userDocRef, userData);
   }
 
-  // Hozzáad egy új felhasználót és frissíti a memóriában tárolt listát
-  async addUser(newUser: any): Promise<void> {
-    if (this.users.length === 0) {
-      await this.getUsers();
-    }
-
-    this.users.push(newUser);
-
-    // Mivel fájlba nem tudunk közvetlenül írni Angularban,
-    // itt *szimuláljuk* az írást memóriában – később Firebase fogja kezelni.
-
-    console.warn('Ez a felhasználó csak memóriába lett mentve, nem fájlba:', newUser);
+  // ✅ Bejelentkezés
+  async login(email: string, password: string): Promise<UserCredential> {
+    return await signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  addTicket(ticket: any): void {
-    const userData = this.getUserData();
-    userData.tickets = userData.tickets || [];
-    userData.tickets.push(ticket);
-    this.setUserData(userData);
+  // ✅ Kijelentkezés
+  async logout(): Promise<void> {
+    await signOut(this.auth);
   }
-  
+
+  // ✅ Aktuális felhasználó objektum
+  getCurrentUser(): User | null {
+    return this.auth.currentUser;
+  }
 }

@@ -8,49 +8,51 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
-
 import { UserService } from '../../services/user.service';
+import { User } from 'firebase/auth';
+import { doc, updateDoc } from 'firebase/firestore';
+import { UsernameFromEmailPipe } from '../../pipes/username.pipe';
 
 @Component({
   selector: 'app-account-home',
   standalone: true,
-  imports: [ CommonModule, RouterModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatSnackBarModule, MatToolbarModule, FormsModule ],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatCardModule,
+    MatListModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    MatToolbarModule,
+    FormsModule, 
+    UsernameFromEmailPipe
+  ],
   templateUrl: './account-home.component.html',
   styleUrls: ['./account-home.component.css']
 })
 export class AccountHomeComponent implements OnInit {
-  username: string = '';
   email: string = '';
   tickets: any[] = [];
 
   constructor(
-    private userService: UserService,
+    public userService: UserService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit() {
-    const userData = this.userService.getUserData();
-    if (userData) {
-      this.username = userData.username;
-      this.email = userData.email;
-      this.tickets = userData.tickets || [];
+  async ngOnInit() {
+    const user: User | null = this.userService.getCurrentUser();
+    if (user) {
+      this.email = user.email || '';
+      //this.tickets = await this.userService.getUserTickets(); TODO: implementálni kell a Firestore-ból való lekérdezést
     }
   }
 
-  logout() {
-    this.userService.setUserData(null);
+  async logout() {
+    await this.userService.logout();
     this.snackBar.open('Sikeres kijelentkezés!', 'Bezár', { duration: 3000 });
     this.router.navigate(['/account']);
-  }
-
-  deleteTicket(index: number) {
-    this.tickets.splice(index, 1);
-    const user = this.userService.getUserData();
-    if (user) {
-      user.tickets = this.tickets;
-      this.userService.setUserData(user);
-    }
   }
 
   goToBooking() {
@@ -68,5 +70,4 @@ export class AccountHomeComponent implements OnInit {
       return 'discount-none';
     }
   }
-  
 }

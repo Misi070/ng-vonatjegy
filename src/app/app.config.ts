@@ -16,20 +16,11 @@ export const appConfig: ApplicationConfig = {
       apiKey: "AIzaSyBh2Z0r3FLO_9hhMhQ4yCHoFCGX5q_FbkU",
       authDomain: "ng-vonatjegy.firebaseapp.com",
       projectId: "ng-vonatjegy",
-      storageBucket: "ng-vonatjegy.firebasestorage.app",
+      storageBucket: "ng-vonatjegy.appspot.com",
       messagingSenderId: "378511793557",
       appId: "1:378511793557:web:335ae47fef7fe345a12a9c"
     })),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()), 
-    provideFirebaseApp(() => initializeApp({ 
-      projectId: "ng-vonatjegy", 
-      appId: "1:378511793557:web:335ae47fef7fe345a12a9c", 
-      storageBucket: "ng-vonatjegy.firebasestorage.app", 
-      apiKey: "AIzaSyBh2Z0r3FLO_9hhMhQ4yCHoFCGX5q_FbkU", 
-      authDomain: "ng-vonatjegy.firebaseapp.com", 
-      messagingSenderId: "378511793557" })), 
-      provideAuth(() => getAuth()), 
-      provideFirestore(() => getFirestore()),
+    provideFirestore(() => getFirestore())
   ]
 };

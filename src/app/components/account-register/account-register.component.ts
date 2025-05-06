@@ -15,18 +15,7 @@ import { UserService } from '../../services/user.service';
 @Component({
   selector: 'app-account-register',
   standalone: true,
-  imports: [
-    FormsModule,
-    CommonModule,
-    RouterModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatListModule,
-    MatIconModule,
-    MatToolbarModule
-  ],
+  imports: [FormsModule, CommonModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatListModule, MatIconModule, MatToolbarModule],
   templateUrl: './account-register.component.html',
   styleUrls: ['./account-register.component.css']
 })
@@ -67,7 +56,7 @@ export class AccountRegisterComponent implements OnInit {
       const userCredential = await this.userService.register(this.email, this.password);
       const uid = userCredential.user.uid;
       
-      await this.userService.saveUserDataToFirestore(uid, this.email, this.email);
+      await this.userService.saveUserDataToFirestore(uid, this.username, this.email);
 
       // 2. Sikeres regisztráció esetén navigálás
       alert('Sikeres regisztráció!');

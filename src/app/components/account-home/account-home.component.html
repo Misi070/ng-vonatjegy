@@ -30,15 +30,15 @@
         <mat-list *ngIf="tickets.length; else noTickets">
           <mat-list-item *ngFor="let ticket of tickets; let i = index">
             <mat-icon matListIcon>train</mat-icon>
-            <div matLine class="ticket-main-line">{{ ticket.departure }} → {{ ticket.arrival }}</div>
+            <div matLine class="ticket-main-line">{{ ticket.from }} → {{ ticket.to }}</div>
             <div matLine class="ticket-secondary">
-              Indulás: {{ ticket.time }} |
-              <span class="discount-badge" [ngClass]="getDiscountClass(ticket.discountApplied || 0)">
-                {{ ticket.discountApplied || 0 }}% kedvezmény
+              Indulás: {{ ticket.departureTime }} |
+              <span class="discount-badge" [ngClass]="getDiscountClass(ticket.discount || 0)">
+                {{ ticket.discount || 0 }}% kedvezmény
               </span> |
-              Ár: {{ ticket.price | number: '1.0-0' }} Ft
+              Ár: {{ ticket.finalPrice | number: '1.0-0' }} Ft
             </div>            
-            <button mat-icon-button color="warn"  matTooltip="Törlés">
+            <button mat-icon-button color="warn" matTooltip="Törlés">
               <mat-icon>delete</mat-icon>
             </button>
           </mat-list-item>

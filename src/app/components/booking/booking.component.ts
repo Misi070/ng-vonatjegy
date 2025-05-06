@@ -12,6 +12,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DiscountPipe } from '../../pipes/discount.pipe';
+import { TicketService } from '../../services/ticket.service'; 
 
 @Component({
   selector: 'app-booking',
@@ -39,7 +40,7 @@ export class BookingComponent {
     { departure: 'Debrecen', arrival: 'Budapest', time: '11:00', price: 6000 }
   ];
 
-  constructor(private router: Router, private userService: UserService, private snackBar: MatSnackBar) {}
+  constructor(private router: Router, private userService: UserService, private snackBar: MatSnackBar, private ticketService: TicketService) {}
 
   searchTrains() {
     this.filteredTrains = this.trains.filter(train =>
@@ -48,38 +49,39 @@ export class BookingComponent {
     );
     this.searchPerformed = true;
   }
-  bookTrain(train: any) {}
-
-  /*
   async bookTrain(train: any) {
-    const userData = this.userService.getCurrentUser();
-    if (!userData) {
-      alert('Csak bejelentkezett felhasználók foglalhatnak jegyet.');
+    const user = this.userService.getCurrentUser();
+    if (!user) {
+      this.snackBar.open('Csak bejelentkezett felhasználók foglalhatnak jegyet.', 'Bezár', { duration: 3000 });
       this.router.navigate(['/account']);
       return;
     }
   
-    const finalPrice = (train.price * (1 - this.discountPercentage / 100)).toFixed(0);
+    const finalPrice = Math.round(train.price * (1 - this.discountPercentage / 100));
   
-    if (confirm(
-      `Biztosan le szeretnéd foglalni a(z) ${train.departure} - ${train.arrival} vonatot ${train.time} időpontban?\n` +
+    const confirmed = confirm(
+      `Biztosan lefoglalod a(z) ${train.departure} - ${train.arrival} vonatot ${train.time} időpontban?\n` +
       `Kedvezmény: ${this.discountPercentage}%\nVégső ár: ${finalPrice} Ft`
-    )) {
-      const ticket = {
-        ...train,
-        price: finalPrice,
-        discountApplied: this.discountPercentage,
-        bookedAt: new Date().toISOString()
-      };
+    );
   
-      try {
-        await this.userService.addTicket(ticket);
-        this.snackBar.open('Foglalás sikeres! Jegy elmentve.', 'Bezár', { duration: 3000 });
-      } catch (err) {
-        console.error('Hiba a jegy mentése közben:', err);
-        this.snackBar.open('Hiba történt a foglalás során.', 'Bezár', { duration: 3000 });
-      }
+    if (!confirmed) return;
+  
+    const ticket = {
+      from: train.departure,
+      to: train.arrival,
+      departureTime: train.time,
+      basePrice: train.price,
+      discount: this.discountPercentage,
+      finalPrice: finalPrice
+    };
+  
+    try {
+      await this.ticketService.bookTicket(ticket);
+      this.snackBar.open('Foglalás sikeres! Jegy elmentve.', 'Bezár', { duration: 3000 });
+    } catch (err) {
+      console.error('Hiba történt a jegy mentése során:', err);
+      this.snackBar.open('Hiba történt a foglalás során.', 'Bezár', { duration: 3000 });
     }
   }
-    */
+  
 }

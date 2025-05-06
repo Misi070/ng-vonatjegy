@@ -10,24 +10,12 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { User } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
 import { UsernameFromEmailPipe } from '../../pipes/username.pipe';
 
 @Component({
   selector: 'app-account-home',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatCardModule,
-    MatListModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSnackBarModule,
-    MatToolbarModule,
-    FormsModule, 
-    UsernameFromEmailPipe
-  ],
+  imports: [ CommonModule, RouterModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule, MatSnackBarModule, MatToolbarModule, FormsModule, UsernameFromEmailPipe],
   templateUrl: './account-home.component.html',
   styleUrls: ['./account-home.component.css']
 })
@@ -45,7 +33,13 @@ export class AccountHomeComponent implements OnInit {
     const user: User | null = this.userService.getCurrentUser();
     if (user) {
       this.email = user.email || '';
-      //this.tickets = await this.userService.getUserTickets(); TODO: implementálni kell a Firestore-ból való lekérdezést
+      try {
+        this.tickets = await this.userService.getUserTickets();
+        console.log('Lekérdezett jegyek:', this.tickets);  // Debugging
+      } catch (error) {
+        console.error('Hiba a jegyek betöltése közben:', error);
+        this.snackBar.open('Hiba történt a jegyek betöltésekor.', 'Bezár', { duration: 3000 });
+      }
     }
   }
 

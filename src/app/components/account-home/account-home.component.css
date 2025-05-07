@@ -11,17 +11,40 @@
   width: 100%;
   max-width: 600px;
   margin-top: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 .toolbar {
   position: sticky;
   top: 0;
   z-index: 10;
+  background-color: #888;
+  color: white;
 }
 
 .spacer {
   flex: 1 1 auto;
 }
+
+.user-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.username {
+  text-align: left;
+  font-weight: bold;
+}
+
+.email {
+  text-align: right;
+  font-size: 0.9rem;
+  color: gray;
+}
+
 
 .actions {
   display: flex;
@@ -31,6 +54,7 @@
 
 .ticket-section h3 {
   margin-top: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .secondary {
@@ -91,4 +115,8 @@
   .account-card {
     padding: 1rem 2rem;
   }
+}
+
+.ticket-actions {
+  margin-left: auto;
 }

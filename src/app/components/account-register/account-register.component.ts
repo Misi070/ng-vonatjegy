@@ -53,7 +53,7 @@ export class AccountRegisterComponent implements OnInit {
     this.loading = true;
     try {
       // 1. Firebase Auth fiók létrehozása
-      const userCredential = await this.userService.register(this.email, this.password);
+      const userCredential = await this.userService.register(this.email, this.password, this.username);
       const uid = userCredential.user.uid;
       
       await this.userService.saveUserDataToFirestore(uid, this.username, this.email);

@@ -10,10 +10,13 @@
   <mat-card class="account-card">
     <mat-card-header>
       <ng-container *ngIf="(userService.currentUser$ | async) as user">
-        <mat-card-title>{{ (user.email ?? '') | usernameFromEmail }}</mat-card-title>
-        <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+        <div class="user-info-row">
+          <mat-card-title class="username">{{ username }}</mat-card-title>
+          <mat-card-subtitle class="email">{{ email | email }}</mat-card-subtitle>
+        </div>
       </ng-container>
     </mat-card-header>
+    
 
     <mat-divider></mat-divider>
 
@@ -37,11 +40,14 @@
                 {{ ticket.discount || 0 }}% kedvezmény
               </span> |
               Ár: {{ ticket.finalPrice | number: '1.0-0' }} Ft
-            </div>            
-            <button mat-icon-button color="warn" matTooltip="Törlés">
-              <mat-icon>delete</mat-icon>
-            </button>
+            </div>
+            <div class="ticket-actions">
+              <button mat-icon-button color="warn" matTooltip="Törlés" (click)="deleteTicket(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </mat-list-item>
+          
         </mat-list>
 
         <ng-template #noTickets>

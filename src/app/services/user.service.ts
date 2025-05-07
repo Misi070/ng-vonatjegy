@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Auth, signInWithEmailAndPassword, signOut, UserCredential, authState, createUserWithEmailAndPassword } from '@angular/fire/auth';
-import { Firestore, doc, setDoc, collection, query, where, getDocs } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, collection, query, where, getDocs, getDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { User } from 'firebase/auth';
 import { Router } from '@angular/router';
@@ -8,15 +8,17 @@ import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
-export class UserService{
+export class UserService {
   currentUser$: Observable<User | null>;
 
   constructor(private auth: Auth, private firestore: Firestore, private router: Router) {
     this.currentUser$ = authState(this.auth);
   }
 
-  async register(email: string, password: string): Promise<UserCredential> {
-    return await createUserWithEmailAndPassword(this.auth, email, password);
+  async register(email: string, password: string, username: string): Promise<UserCredential> {
+    const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+    await this.saveUserDataToFirestore(userCredential.user.uid, username, email);
+    return userCredential;
   }
 
   async saveUserDataToFirestore(uid: string, username: string, email: string): Promise<void> {
@@ -53,5 +55,11 @@ export class UserService{
       id: doc.id,
       ...doc.data() as any
     }));
+  }
+
+  async getUserProfile(uid: string): Promise<any> {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    const userDoc = await getDoc(userDocRef);
+    return userDoc.exists() ? userDoc.data() : null;
   }
 }

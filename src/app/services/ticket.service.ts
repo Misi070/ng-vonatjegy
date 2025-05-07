@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, addDoc, query, where, getDocs } from '@angular/fire/firestore';
 import { UserService } from './user.service';
+import { doc, deleteDoc } from 'firebase/firestore';
 
 
 @Injectable({
@@ -30,5 +31,10 @@ export class TicketService {
     const q = query(collection(this.firestore, 'tickets'), where('userEmail', '==', user.email));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+  }
+  
+  async deleteTicketById(ticketId: string): Promise<void> {
+    const ticketDocRef = doc(this.firestore, 'tickets', ticketId);
+    await deleteDoc(ticketDocRef);
   }
 }

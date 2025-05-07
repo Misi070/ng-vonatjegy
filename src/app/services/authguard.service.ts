@@ -17,7 +17,7 @@ export class AuthguardService implements CanActivate {
     const currentUser = this.userService.getCurrentUser();
     if (!currentUser) {
       this.snackBar.open(
-        'Csak bejelentkezett felhasználók foglalhatnak jegyet. Először jelentkezz be!',
+        'Először jelentkezz be!',
         'Bezár',
         { duration: 3000 }
       );

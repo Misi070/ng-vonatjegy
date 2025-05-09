@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, Router, UrlTree } from '@angular/router';
 import { UserService } from './user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,18 +14,14 @@ export class AuthguardService implements CanActivate {
     private snackBar: MatSnackBar
   ) {}
 
-  async canActivate(): Promise<boolean> {
-    const currentUser = this.userService.getCurrentUser();
+  async canActivate(): Promise<boolean | UrlTree> {
+    const currentUser = await firstValueFrom(this.userService.currentUser$);
+
     if (!currentUser) {
-      this.snackBar.open(
-        'Először jelentkezz be!',
-        'Bezár',
-        { duration: 3000 }
-      );
-      this.router.navigate(['/account']);
-      return false;
+      this.snackBar.open('Először jelentkezz be!', 'Bezár', { duration: 3000 });
+      return this.router.createUrlTree(['/account']);
     }
-    
+
     return true;
   }
 }

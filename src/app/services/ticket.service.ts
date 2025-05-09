@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Firestore, collection, addDoc, query, where, getDocs } from '@angular/fire/firestore';
 import { UserService } from './user.service';
 import { doc, deleteDoc } from 'firebase/firestore';
+import { Ticket } from '../models/ticket';
 
 
 @Injectable({
@@ -10,7 +11,7 @@ import { doc, deleteDoc } from 'firebase/firestore';
 export class TicketService {
   constructor(private firestore: Firestore, private userService: UserService) {}
 
-  async bookTicket(ticketData: any): Promise<void> {
+  async bookTicket(ticketData: Ticket): Promise<void> {
     const user = this.userService.getCurrentUser();
     if (!user) throw new Error('Nincs bejelentkezve felhasználó');
 
@@ -24,13 +25,19 @@ export class TicketService {
     await addDoc(ticketsRef, ticket);
   }
 
-  async getTicketsForCurrentUser(): Promise<any[]> {
+  async getTicketsForCurrentUser(): Promise<Ticket[]> {
     const user = this.userService.getCurrentUser();
     if (!user?.email) return [];
 
     const q = query(collection(this.firestore, 'tickets'), where('userEmail', '==', user.email));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data() as Ticket;
+      return {
+        id: doc.id,
+        ...data
+      };
+    });
   }
   
   async deleteTicketById(ticketId: string): Promise<void> {

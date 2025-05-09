@@ -39,14 +39,14 @@ export class AccountRegisterComponent implements OnInit {
   async onSubmit() {
     // Reset error message at the start of each attempt
     this.errorMessage = '';
-    
-    if (this.password !== this.confirmPassword) {
-      this.errorMessage = 'A jelszavak nem egyeznek meg!';
-      return;
-    }
 
     if (!this.email || !this.password || !this.username) {
       this.errorMessage = 'Minden mezőt ki kell tölteni!';
+      return;
+    }
+
+    if (this.password !== this.confirmPassword) {
+      this.errorMessage = 'A jelszavak nem egyeznek meg!';
       return;
     }
 

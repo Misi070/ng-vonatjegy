@@ -12,6 +12,7 @@ import { UserService } from '../../services/user.service';
 import { User } from 'firebase/auth';
 import { EmailPipe } from '../../pipes/email.pipe';
 import { TicketService } from '../../services/ticket.service';
+import { Ticket } from '../../models/ticket';
 
 @Component({
   selector: 'app-account-home',
@@ -23,7 +24,7 @@ import { TicketService } from '../../services/ticket.service';
 export class AccountHomeComponent implements OnInit {
   email: string = '';
   username: string = '';
-  tickets: any[] = [];
+  tickets: Ticket[] = [];
 
   constructor(
     public userService: UserService,
@@ -75,8 +76,12 @@ export class AccountHomeComponent implements OnInit {
     const confirmed = confirm(`Biztosan törölni szeretnéd a(z) ${ticket.from} → ${ticket.to} jegyet?`);
   
     if (confirmed) {
-      await this.ticketService.deleteTicketById(ticket.id);
-      this.tickets.splice(index, 1); 
+      if (ticket.id) {
+        await this.ticketService.deleteTicketById(ticket.id);
+        this.tickets.splice(index, 1); 
+      } else {
+        this.snackBar.open('Nem található a jegy azonosítója, nem lehet törölni.', 'Bezár', { duration: 3000 });
+      }
     }
   }
 }

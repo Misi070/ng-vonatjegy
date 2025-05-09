@@ -32,22 +32,22 @@
         <h3>Jegyeim</h3>
         <mat-list *ngIf="tickets.length; else noTickets">
           <mat-list-item *ngFor="let ticket of tickets; let i = index">
-            <mat-icon matListIcon>train</mat-icon>
-            <div matLine class="ticket-main-line">{{ ticket.from }} → {{ ticket.to }}</div>
-            <div matLine class="ticket-secondary">
-              Indulás: {{ ticket.departureTime }} |
-              <span class="discount-badge" [ngClass]="getDiscountClass(ticket.discount || 0)">
-                {{ ticket.discount || 0 }}% kedvezmény
-              </span> |
-              Ár: {{ ticket.finalPrice | number: '1.0-0' }} Ft
-            </div>
-            <div class="ticket-actions">
+            <div class="ticket-item-content">
+              <div class="ticket-info">
+                <div class="ticket-main-line">{{ ticket.from }} → {{ ticket.to }}</div>
+                <div class="ticket-secondary">
+                  Indulás: {{ ticket.departureTime.toDate() | date:'HH:mm' }} |
+                  <span class="discount-badge" [ngClass]="getDiscountClass(ticket.discount || 0)">
+                    {{ ticket.discount || 0 }}% kedvezmény
+                  </span> |
+                  Ár: {{ ticket.finalPrice | number: '1.0-0' }} Ft
+                </div>
+              </div>
               <button mat-icon-button color="warn" matTooltip="Törlés" (click)="deleteTicket(i)">
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
-          </mat-list-item>
-          
+          </mat-list-item>                   
         </mat-list>
 
         <ng-template #noTickets>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -12,7 +12,11 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DiscountPipe } from '../../pipes/discount.pipe';
-import { TicketService } from '../../services/ticket.service'; 
+import { TicketService } from '../../services/ticket.service';
+import { TrainService } from '../../services/train.service';
+import { Timestamp } from 'firebase/firestore';
+import { Train } from '../../models/train';
+import { Ticket } from '../../models/ticket';
 
 @Component({
   selector: 'app-booking',
@@ -21,60 +25,80 @@ import { TicketService } from '../../services/ticket.service';
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.css']
 })
-export class BookingComponent {
+export class BookingComponent implements AfterViewInit {
+
+  @ViewChild('departureInput', { static: true }) departureInput!: ElementRef;
+
   departureStation: string = '';
   arrivalStation: string = '';
-  filteredTrains: any[] = [];
+  trains: Train[] = [];
+  filteredTrains: Train[] = [];
   searchPerformed: boolean = false;
 
-  discountPercentage: number = 0; // Kezdeti kedvezmény, ha nincs beállítva, akkor nulla
-  //Fix kedvezmények, amiket a felhasználó választhat
+  discountPercentage: number = 0;
   discountOptions: number[] = [0, 50, 70, 100];
 
-  trains = [
-    { departure: 'Budapest', arrival: 'Szeged', time: '08:00', price: 5000 },
-    { departure: 'Budapest', arrival: 'Szeged', time: '09:00', price: 5000 },
-    { departure: 'Budapest', arrival: 'Debrecen', time: '09:00', price: 6000 },
-    { departure: 'Szeged', arrival: 'Budapest', time: '10:00', price: 5000 },
-    { departure: 'Szeged', arrival: 'Budapest', time: '10:00', price: 5000 },
-    { departure: 'Debrecen', arrival: 'Budapest', time: '11:00', price: 6000 }
-  ];
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private snackBar: MatSnackBar,
+    private ticketService: TicketService,
+    private trainService: TrainService
+  ) {}
 
-  constructor(private router: Router, private userService: UserService, private snackBar: MatSnackBar, private ticketService: TicketService) {}
+  ngOnInit(): void {
+    this.loadTrainsFromFirestore();
+  }
 
-  searchTrains() {
+  ngAfterViewInit(): void {
+    if (this.departureInput) {  
+      setTimeout(() => {   
+        this.departureInput.nativeElement.focus();   
+      });
+    }
+  }
+
+
+  searchTrains(): void {
+    const from = this.departureStation.trim().toLowerCase();
+    const to = this.arrivalStation.trim().toLowerCase();
+
     this.filteredTrains = this.trains.filter(train =>
-      train.departure.toLowerCase().includes(this.departureStation.toLowerCase()) &&
-      train.arrival.toLowerCase().includes(this.arrivalStation.toLowerCase())
+      train.departure.toLowerCase().includes(from) &&
+      train.arrival.toLowerCase().includes(to)
     );
     this.searchPerformed = true;
   }
-  async bookTrain(train: any) {
+
+  async bookTrain(train: Train): Promise<void> {
     const user = this.userService.getCurrentUser();
     if (!user) {
       this.snackBar.open('Csak bejelentkezett felhasználók foglalhatnak jegyet.', 'Bezár', { duration: 3000 });
       this.router.navigate(['/account']);
       return;
     }
-  
+
     const finalPrice = Math.round(train.price * (1 - this.discountPercentage / 100));
-  
+
     const confirmed = confirm(
-      `Biztosan lefoglalod a(z) ${train.departure} - ${train.arrival} vonatot ${train.time} időpontban?\n` +
+      `Biztosan lefoglalod a(z) ${train.departure} - ${train.arrival} vonatot ` +
+      `${(train.time instanceof Date ? train.time : (train.time as Timestamp).toDate()).toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })} időpontban?\n` +
       `Kedvezmény: ${this.discountPercentage}%\nVégső ár: ${finalPrice} Ft`
     );
-  
+
     if (!confirmed) return;
-  
-    const ticket = {
+
+    const ticket: Ticket = {
       from: train.departure,
       to: train.arrival,
-      departureTime: train.time,
+      departureTime: Timestamp.fromDate(
+        train.time instanceof Date ? train.time : (train.time as Timestamp).toDate()
+      ),
       basePrice: train.price,
       discount: this.discountPercentage,
       finalPrice: finalPrice
     };
-  
+
     try {
       await this.ticketService.bookTicket(ticket);
       this.snackBar.open('Foglalás sikeres! Jegy elmentve.', 'Bezár', { duration: 3000 });
@@ -83,5 +107,17 @@ export class BookingComponent {
       this.snackBar.open('Hiba történt a foglalás során.', 'Bezár', { duration: 3000 });
     }
   }
-  
+
+  async loadTrainsFromFirestore(): Promise<void> {
+    try {
+      const trains = await this.trainService.getAllTrains();
+      this.trains = trains.map(train => ({
+        ...train,
+        time: (train.time instanceof Timestamp) ? train.time.toDate() : train.time // Firestore Timestamp -> JS Date
+      }));
+    } catch (err) {
+      console.error('Nem sikerült betölteni a vonatokat:', err);
+      this.snackBar.open('Nem sikerült betölteni a vonatokat.', 'Bezár', { duration: 3000 });
+    }
+  }
 }

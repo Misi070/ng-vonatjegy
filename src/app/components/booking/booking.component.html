@@ -4,7 +4,7 @@
     <form (ngSubmit)="searchTrains()" class="booking-form">
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Indulási állomás</mat-label>
-        <input matInput [(ngModel)]="departureStation" name="departure">
+        <input matInput [(ngModel)]="departureStation" name="departure" #departureInput>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
@@ -30,7 +30,7 @@
           <mat-list-item *ngFor="let train of filteredTrains">
             <div class="train-info">
               <div mat-line>{{ train.departure }} - {{ train.arrival }}</div>
-              <div mat-line>{{ train.time }}</div>
+              <div mat-line>Indulási idő: {{ train.time | date:'HH:mm' }}</div>
               <div class="price">{{ train.price | discount:discountPercentage }} Ft</div>
             </div>
             <button mat-stroked-button color="accent" (click)="bookTrain(train)">Foglalás</button>
